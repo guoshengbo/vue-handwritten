@@ -1,5 +1,5 @@
 {
-  "name": "vue-handwritten",
+  "name": "vue-hand-written",
   "version": "1.0.0",
   "description": "A handwritten component for Vue 2.x",
   "devDependencies": {
@@ -35,10 +35,9 @@
     "type": "git",
     "url": "git+https://github.com/guoshengbo/vue-handwritten.git"
   },
-  "author": "707562656",
+  "author": "guoshengbo",
   "keywords": [
-    "vue-handwritten",
-    "flip",
+    "vue-hand-written",
     "vue"
   ],
   "license": "MIT",

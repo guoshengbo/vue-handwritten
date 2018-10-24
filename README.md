@@ -29,6 +29,6 @@ npm i vue-handwritten --save
   }
 </script>
 ```
-deadline（number）:需显示的数字        
+<!-- deadline（number）:需显示的数字        
 
-length（number）：一共显示多少位（不能小于deadline长度，多出部分填充0显示）
+length（number）：一共显示多少位（不能小于deadline长度，多出部分填充0显示） -->
