@@ -1,6 +1,6 @@
 {
   "name": "vue-hand-written",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A hand-written component for Vue 2.x",
   "devDependencies": {
     "axios": "^0.17.0",

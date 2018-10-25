@@ -24,7 +24,6 @@
 </template>
 <script type="text/javascript">
 import axios from 'axios'
-import md5 from './utils/md5.min'
 export default {
   data() {
     return {
@@ -248,7 +247,8 @@ export default {
     },
     uploadFile (file) {
       let self = this
-      axios.post(self.$config.fileServer + '/api/upload/' + self.toHexString(md5.arrayBuffer(file)) + '/png', file, {
+      // axios.post(self.$config.fileServer + '/api/upload/' + self.toHexString(md5.arrayBuffer(file)) + '/png', file, {
+        axios.post(self.$config.fileServer + '/api/upload/' + self.toHexString(file) + '/png', file, {
         headers: {
           Authorization: self.$config.fileServerAuthor
         }
