@@ -1,7 +1,7 @@
 
 const path = require('path')
 const webpack = require('webpack')
-// const uglify = require('uglifyjs-webpack-plugin')
+const uglify = require('uglifyjs-webpack-plugin')
 module.exports = {
   devtool: 'source-map',
   entry: './src/index.js', // 入口文件，就是上步骤的src目录下的index.js文件，

@@ -1,4 +1,4 @@
-# vue-handwritten
+# vue-hand-written
 
 基于 Vue 2.x 的手写组件
 
@@ -7,7 +7,7 @@
 ## 安装
 
 ```
-npm i vue-handwritten --save
+npm i vue-hand-written --save
 ```
 
 ## 使用
@@ -20,7 +20,7 @@ npm i vue-handwritten --save
 </template>
 
 <script>
-  import handwritten from 'vue-handwritten'
+  import handwritten from 'vue-hand-written'
 
   export default {
       data () {
