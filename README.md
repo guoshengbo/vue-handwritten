@@ -15,7 +15,7 @@ npm i vue-hand-written --save
 ```vue
 <template>
   <div>
-    <handwritten></handwritten>
+    <handwritten :width='400' :height="250" @getimageu8="getu8" @getimage="get"></handwritten>
   </div>
 </template>
 
@@ -23,12 +23,20 @@ npm i vue-hand-written --save
   import handwritten from 'vue-hand-written'
 
   export default {
-      data () {
+      components: { 
+        handwritten
+      },
+      methods:{
+        getu8 (img) {
+          console.log(img)
+        },
+        get (img) {
+          console.log(img)
+        }
       }
-      components: { handwritten }
   }
 </script>
 ```
-<!-- deadline（number）:需显示的数字        
+width（number）: 画板宽度，默认400        
 
-length（number）：一共显示多少位（不能小于deadline长度，多出部分填充0显示） -->
+height（number）：画板宽度，默认250

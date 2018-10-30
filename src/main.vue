@@ -2,23 +2,22 @@
 <template>
   <div class="mdui-bottom-nav-fixed mdui-theme-primary-indigo mdui-theme-accent-pink mdui-loaded">
     <div class="eraser hidden"></div>
-    <canvas class="canvas" id="thecanvas" width="400" height="250"></canvas>
+    <canvas class="canvas" id="thecanvas" :width="width" :height="height"></canvas>
 
     <div class="mdui-bottom-nav" style="overflow: inherit;">
       <a href="javascript:;" @click="setAttr()" class="mdui-ripple">
         <label>清空画布</label>
       </a>
-      <span>候选字：{{itemstring}}</span>
     </div>
 
-    <div id="beforeWrapper" class="mdui-dialog-content" style="background-color: rgb(251, 251, 251); min-height: 200px;">
+    <div class="mdui-dialog-content" style="background-color: rgb(251, 251, 251); min-height: 200px;">
       <ul>
         <li v-for="(item, index) in imageList" :key="index">
           <img @click="goback(item)" mdui-dialog-close class='mdui-shadow-7' :src='item'>
         </li>
       </ul>
     </div>
-    <button class="mdui-btn mdui-ripple" @click="beforeListClear()" mdui-dialog-close="">清空历史</button>
+    <button class="mdui-btn mdui-ripple" @click="imageList=[]" mdui-dialog-close="">清空历史</button>
     <button class="mdui-btn mdui-ripple" mdui-dialog-close="">取消</button>
   </div>
 </template>
@@ -29,18 +28,26 @@ export default {
     return {
       startX: '',
       startY: '',
-      drawing: true, 
+      drawing: true,
       endX: '',
       endY: true,
-      width: 5,
+      lineWidth: 5,
       paint: "",
-      color: 'black',
+      linecolor: 'black',
       canvas: '',
       isDown: false,
-      imageList: [],
-      itemstring: ''
+      imageList: []
     }
   },
+  props: {
+    width:{
+      type: Number,
+      default: 400
+    },
+    height:{
+      type: Number,
+      default: 250
+    }},
   mounted() {
     //画笔
     var self = this
@@ -51,9 +58,7 @@ export default {
     self.canvas.addEventListener('mousemove', this.onMouseMove, false); 
     self.canvas.addEventListener('mousedown', this.onMouseDown, false); 
     self.canvas.addEventListener('mouseup', this.onMouseUp, false); 
-    $(function () {
-      self.setAttr()
-    })
+    self.setAttr()
     //检测是否是移动端
     // function goPAGE() {
     //     if (!(navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i))) {
@@ -71,50 +76,6 @@ export default {
       this.paint.fillStyle = "#fff";
       this.paint.fillRect(0,0, this.canvas.width, this.canvas.height);
     },
-    handwriting (img) {
-      // debugger  腾讯
-      let self = this
-      var crypto = require('crypto')
-      /* eslint-disable */
-      var secretId  = 'AKIDMZYJqAk6j7IFySLma9TZR4UgeN0XcZ3P',
-          secretKey = 'HMCnDNIyPs9Bzc1DAtPgiU4asvjJekbR',
-          appid     = '1257270260',
-          pexpired  = 86400,
-          userid   = 0;
-
-      var now = parseInt(Date.now() / 1000),
-          rdm = parseInt(Math.random() * Math.pow(2, 32)),
-          plainText = 'a=' + appid + '&k=' + secretId + '&e=' + ( now + pexpired) + '&t=' + now + '&r=' + rdm + userid + '&f=',
-          data = new Buffer(plainText,'utf8'),
-          res = crypto.createHmac('sha1', secretKey).update(data).digest(),
-          bin = Buffer.concat([res,data])
-
-      var sign = bin.toString('base64')
-      // debugger
-      axios({
-        method: 'post',
-        // baseURL: 'https://recognition.image.myqcloud.com',
-        url: 'https://recognition.image.myqcloud.com/ocr/handwriting',
-        // url: 'https://aip.baidubce.com/rest/2.0/ocr/v1/handwriting?access_token=24.a70880b79f72a0a031ef6cd7bded1336.2592000.1542357753.282335-14462587',  // 百度api，客户端可使用
-        headers: {
-          Authorization: sign,
-          // 'Content-type': 'multipart/form-data' // 百度请求头
-        },
-        data: {
-          url: self.$config.filePath + img,
-          // image: img // 百度 图片传参 （）
-          appid: "1257270260",
-          bucket: "test",
-        }
-      }).then(data => {
-        // debugger
-        if (data.message === 'OK') {
-          self.itemstring = data.data.items[0].itemstring
-        } else {
-          self.itemstring = '无法识别'
-        }
-      })
-    },
     onMouseMove(event) {
       var self = this
       event.preventDefault();
@@ -127,8 +88,8 @@ export default {
         self.paint.lineTo(self.endX, self.endY);
         self.paint.closePath();
         //动态的设置颜色
-        self.paint.strokeStyle = self.color;
-        self.paint.lineWidth = self.width;
+        self.paint.strokeStyle = self.linecolor;
+        self.paint.lineWidth = self.lineWidth;
         self.paint.stroke();
       } else if (self.isDown) {
         //橡皮擦
@@ -195,8 +156,8 @@ export default {
         self.paint.lineTo(self.endX, self.endY);
         self.paint.closePath();
         //动态的设置颜色
-        self.paint.strokeStyle = self.color;
-        self.paint.lineWidth = self.width;
+        self.paint.strokeStyle = self.linecolor;
+        self.paint.lineWidth = self.lineWidth;
         self.paint.stroke();
       } else {
         //橡皮擦
@@ -221,43 +182,25 @@ export default {
       self.setAttr();
       let img = new Image();
       img.src = image;
+      let imageu8 = this.dataURLtoBlob(image)
       img.onload = function () {
         self.paint.drawImage(img, 0, 0);
+        self.$emit('getimageu8', imageu8);
+        self.$emit('getimage', image);
+        self.stackImgs()
       }
     },
     //每次手离开 向历史操作里推送本次绘图
     stackImgs() {
-      var mycanvas = document.getElementById("thecanvas");
-      var image = mycanvas.toDataURL("image/png");
-      var imageu8 = this.dataURLtoBlob(image)
-      // var image1 = image.replace('data:image/png;base64,','')
-      this.uploadFile (imageu8)
+      let mycanvas = document.getElementById("thecanvas");
+      let image = mycanvas.toDataURL("image/png");
+      let imageu8 = this.dataURLtoBlob(image)
+      this.$emit('getimageu8', imageu8);
+      this.$emit('getimage', image);
       this.imageList.push(image)
-      // $("#beforeList").append("<li><img mdui-dialog-close class='mdui-shadow-7' @click=\"goback('" + image +
-      //   "')\" src='" + image + "'></li>");
-    },
-    toHexString (data) {
-      const array = new Uint8Array(data)
-      let hex = ''
-      for (let i = 0; i < array.length; i++) {
-        const c = array[i].toString('16')
-        hex += c.length === 1 ? `0${c}` : c
-      }
-      return hex
-    },
-    uploadFile (file) {
-      let self = this
-      // axios.post(self.$config.fileServer + '/api/upload/' + self.toHexString(md5.arrayBuffer(file)) + '/png', file, {
-        axios.post(self.$config.fileServer + '/api/upload/' + self.toHexString(file) + '/png', file, {
-        headers: {
-          Authorization: self.$config.fileServerAuthor
-        }
-      }).then ( data => {
-        self.handwriting(data)
-      })
     },
     dataURLtoBlob(dataurl) {
-      var arr = dataurl.split(','),
+      let arr = dataurl.split(','),
       mime = arr[0].match(/:(.*?);/)[1],
       bstr = atob(arr[1]),
       n = bstr.length,
@@ -267,10 +210,6 @@ export default {
       }
       return u8arr
     },
-    //清空历史记录
-    beforeListClear() {
-      $("#beforeList").empty();
-    }
   }
 }
 </script>
